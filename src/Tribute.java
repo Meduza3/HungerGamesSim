@@ -2,17 +2,20 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import javafx.scene.Group;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 public class Tribute extends Circle implements Runnable {
@@ -25,7 +28,9 @@ public class Tribute extends Circle implements Runnable {
     int gridX, gridY;
     double timeItTakesToMove;
     private Pane pane;
-    Tribute(Pane pane, double x, double y, String name) {
+    private TextArea console;
+    ArrayList<Item> inventory = new ArrayList<>();
+    Tribute(Pane pane, TextArea console, double x, double y, String name) {
         this.setCenterX((x - 1) * GUI.cellWidth + GUI.cellWidth / 2);
         this.setCenterY((y - 1) * GUI.cellHeight + GUI.cellHeight / 2);
         this.setRadius(20);
@@ -33,6 +38,7 @@ public class Tribute extends Circle implements Runnable {
         this.setOnMouseEntered(this::handleMouseHover);
         this.name = name;
         this.pane = pane;
+        this.console = console;
     }
 
     private void handleMouseClick(MouseEvent mouseEvent) {
@@ -61,6 +67,43 @@ public class Tribute extends Circle implements Runnable {
                 }
             }
         }
+        updateInventoryDisplay();
+    }
+
+    void updateInventoryDisplay(){
+        Platform.runLater(() -> {
+            ArrayList<Node> paneChildren = new ArrayList<>(pane.getParent().getChildrenUnmodifiable());
+            for (Node node : paneChildren) {
+                if (node != null && node.getId() != null && node.getId().equals("info")) {
+                    if (node instanceof Pane) {
+                        for (Node child : ((Pane) node).getChildren()) {
+                            if (child instanceof Rectangle) {
+                                String id = child.getId();
+                                if (id != null && id.startsWith("inventory")) {
+                                    int index = Integer.parseInt(id.replace("inventory", "")) - 1;
+                                    if (index < inventory.size()) {
+                                        Item item = inventory.get(index);
+                                        switch (item) {
+                                            case WATER:
+                                                ((Rectangle) child).setFill(Color.BLUE);
+                                                break;
+                                            case SWORD:
+                                                ((Rectangle) child).setFill(Color.RED);
+                                                break;
+                                            case FRUIT:
+                                                ((Rectangle) child).setFill(Color.GREEN);
+                                                break;
+                                        }
+                                    } else {
+                                        ((Rectangle) child).setFill(Color.WHITE);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -163,23 +206,37 @@ public class Tribute extends Circle implements Runnable {
     }
 
     private void interact(){
+        ObservableList<Node> paneSiblings = pane.getParent().getChildrenUnmodifiable();
+        for(Node node : paneSiblings){
+            if(node instanceof ScrollPane){
+
+            }
+        }
         if(getCurrentCell().getType() == "Water" && thirst < 80){
             if(Math.random() > 0.3){
-                System.out.println(name + " is drinking water!");
-                thirst = thirst + 20;
+                System.out.println(name + " is collecting sweet lake water!");
+                console.appendText(name + " is collecting sweet lake water!\n");
+                inventory.add(Item.WATER);
             } else {
                 System.out.println(name + " fell in the water!");
+                console.appendText(name + " fell in the water!\n");
                 health = health - Math.floor(Math.random() * 30);
             }
         }
         if(getCurrentCell().getType() == "Forest" && hunger < 80){
             if(Math.random() > 0.3) {
-                System.out.println(name + " is eating food from the forest!");
-                hunger = hunger + 20;
+                System.out.println(name + " is collecting food from the forest!");
+                console.appendText(name + " is collecting food from the forest!\n");
+                inventory.add(Item.FRUIT);
             } else {
                 System.out.println(name + " fell down a tree!");
+                console.appendText(name + " fell down a tree!\n");
                 health = health - Math.floor(Math.random() * 30);
             }
+        }if(getCurrentCell().getType() == "Cornucopia"){
+            System.out.println(name + " is collecting a weapon from the cornucopia!");
+            console.appendText(name + " is collecting a weapon from the cornucopia!\n");
+            inventory.add(Item.SWORD);
         }
     }
 }

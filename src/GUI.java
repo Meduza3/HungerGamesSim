@@ -42,28 +42,28 @@ public class GUI implements Initializable {
         }
 
         //Draw the tributes
-        Tribute t1 = new Tribute(pane, 2, 6, "Alice the Falcon Whisperer");
-        Tribute t2 = new Tribute(pane, 2, 8, "Bob the Bear Wrestler");
-        Tribute t3 = new Tribute(pane, 2, 10, "Clara the Dolphin Trainer");
+        Tribute t1 = new Tribute(pane, console,2, 6, "Alice");
+        Tribute t2 = new Tribute(pane, console,2, 8, "Bob");
+        Tribute t3 = new Tribute(pane, console,2, 10, "Clara");
 
-        Tribute t4 = new Tribute(pane, 4, 4, "David the Wolf Tracker");
-        Tribute t5 = new Tribute(pane, 4, 12, "Emily the Eagle Soarer");
+        Tribute t4 = new Tribute(pane, console,4, 4, "David");
+        Tribute t5 = new Tribute(pane, console,4, 12, "Emily");
 
-        Tribute t6 = new Tribute(pane, 6, 2, "Frank the Panther Prowler");
-        Tribute t7 = new Tribute(pane, 6, 14, "Grace the Snake Charmer");
+        Tribute t6 = new Tribute(pane, console,6, 2, "Frank");
+        Tribute t7 = new Tribute(pane, console,6, 14, "Grace");
 
-        Tribute t8 = new Tribute(pane, 8, 2, "Harry the Hawk Gazer");
-        Tribute t9 = new Tribute(pane, 8, 14, "Isabella the Butterfly Catcher");
+        Tribute t8 = new Tribute(pane, console,8, 2, "Harry");
+        Tribute t9 = new Tribute(pane, console,8, 14, "Isabella");
 
-        Tribute t10 = new Tribute(pane, 10, 2, "Jack the Tiger Tamer");
-        Tribute t11 = new Tribute(pane, 10, 14, "Katherine the Horse Rider");
+        Tribute t10 = new Tribute(pane, console,10, 2, "Jack");
+        Tribute t11 = new Tribute(pane, console,10, 14, "Katherine");
 
-        Tribute t12 = new Tribute(pane, 12, 4, "Luke the Bull Fighter");
-        Tribute t13 = new Tribute(pane, 12, 12, "Mia the Deer Chaser");
+        Tribute t12 = new Tribute(pane, console,12, 4, "Luke");
+        Tribute t13 = new Tribute(pane, console,12, 12, "Mia");
 
-        Tribute t14 = new Tribute(pane, 14, 6, "Noah the Shark Diver");
-        Tribute t15 = new Tribute(pane, 14, 8, "Olivia the Otter Swimmer");
-        Tribute t16 = new Tribute(pane, 14, 10, "Peter the Parrot Talker");
+        Tribute t14 = new Tribute(pane, console,14, 6, "Noah");
+        Tribute t15 = new Tribute(pane, console,14, 8, "Olivia");
+        Tribute t16 = new Tribute(pane, console, 14, 10, "Peter");
         pane.getChildren().addAll(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
 
 
