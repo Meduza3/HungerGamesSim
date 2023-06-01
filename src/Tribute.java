@@ -2,6 +2,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -11,6 +12,7 @@ import javafx.util.Duration;
 import javafx.scene.Group;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class Tribute extends Circle implements Runnable {
@@ -28,12 +30,37 @@ public class Tribute extends Circle implements Runnable {
         this.setCenterY((y - 1) * GUI.cellHeight + GUI.cellHeight / 2);
         this.setRadius(20);
         this.setOnMouseClicked(this::handleMouseClick);
+        this.setOnMouseEntered(this::handleMouseHover);
         this.name = name;
         this.pane = pane;
     }
 
     private void handleMouseClick(MouseEvent mouseEvent) {
         System.out.println("Name: " + name + ", Health: " + health + ", Hunger: " + hunger + ", Thirst: " + thirst);
+    }
+
+    private void handleMouseHover(MouseEvent mouseEvent) {
+        System.out.println("Mouse hovered on " + name + "!");
+        ArrayList<Node> paneChildren = new ArrayList<>(pane.getParent().getChildrenUnmodifiable());
+        for(int i = 0; i < paneChildren.size(); i++){
+            System.out.println(paneChildren.get(i));
+            Node node = paneChildren.get(i);
+            if(node != null && node.getId() != null && node.getId().equals("info")){
+                if(node instanceof Pane){
+                    for(Node child : ((Pane) node).getChildren()){
+                        if(child instanceof Text){
+                            if(child.getId().equals("infoName")){((Text) child).setText(name);}
+                            else if(child.getId().equals("infoHealth")){((Text) child).setText("Health: " + health);}
+                            else if(child.getId().equals("infoHunger")){((Text) child).setText("Hunger: " + hunger);}
+                            else if(child.getId().equals("infoThirst")){((Text) child).setText("Thirst: " + thirst);}
+                        } else if(child instanceof Circle){
+                            ((Circle) child).setFill(this.getFill());
+                            ((Circle) child).setStroke(this.getStroke());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -142,7 +169,7 @@ public class Tribute extends Circle implements Runnable {
                 thirst = thirst + 20;
             } else {
                 System.out.println(name + " fell in the water!");
-                health = health - Math.random() * 30;
+                health = health - Math.floor(Math.random() * 30);
             }
         }
         if(getCurrentCell().getType() == "Forest" && hunger < 80){
@@ -151,7 +178,7 @@ public class Tribute extends Circle implements Runnable {
                 hunger = hunger + 20;
             } else {
                 System.out.println(name + " fell down a tree!");
-                health = health - Math.random() * 30;
+                health = health - Math.floor(Math.random() * 30);
             }
         }
     }

@@ -2,6 +2,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 
 import java.net.URL;
@@ -13,10 +14,13 @@ public class GUI implements Initializable {
     //GUI Parameters
     public static final int rows = 15;
     public static final int columns = 15;
-    public static final double cellWidth = 1200/columns;
-    public static final double cellHeight = 800/rows;
+    public static final double cellWidth = 700/columns;
+    public static final double cellHeight = 700/rows;
     @FXML
     public Pane pane;
+
+    @FXML
+    private TextArea console;
     public static ArrayList<Cell> cells = new ArrayList<>();
 
     @Override
