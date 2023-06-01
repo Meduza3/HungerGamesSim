@@ -26,7 +26,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <GridPane layoutX="75.0" layoutY="442.0">
+            <GridPane fx:id="inventoryDisplay" layoutX="75.0" layoutY="442.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
@@ -52,6 +52,7 @@
             <Text fx:id="infoHealth" layoutX="36.0" layoutY="305.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Health: 100" />
             <Text fx:id="infoHunger" layoutX="36.0" layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hunger: 100" />
             <Text fx:id="infoThirst" layoutX="36.0" layoutY="358.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thirst: 100" />
+            <Text fx:id="infoEq" layoutX="36.0" layoutY="385.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Equipment: " />
          </children>
       </Pane>
    </left>
