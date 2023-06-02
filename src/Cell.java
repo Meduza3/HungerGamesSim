@@ -10,6 +10,7 @@ public class Cell extends Rectangle implements Runnable {
     public int gridX;
     public int gridY;
     public double centerX, centerY;
+    public boolean isAvailible;
     public Cell(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.setOnMouseClicked(this::handleMouseClick);
@@ -19,6 +20,10 @@ public class Cell extends Rectangle implements Runnable {
     @Override
     public void run() {
         Platform.runLater(this::rollType);
+        while(isAvailible){
+
+        }
+        setFill(Color.RED);
     }
 
     private void rollType() {

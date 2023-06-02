@@ -1,17 +1,18 @@
+import javafx.scene.paint.Color;
+
 public enum Item {
-    FRUIT("Fruit"),
-    WATER("Water"),
-    SWORD("Sword"),
-    SHIELD("Shield"),
-    ARMOR("Armor");
+    FRUIT("Fruit", Color.GREEN),
+    WATER("Water", Color.BLUE),
+    SWORD("Sword", Color.RED),
+    SHIELD("Shield", Color.GRAY),
+    ARMOR("Armor", Color.DARKGRAY),
+    MEDICINE("Medicine", Color.PINK);
 
-    private String name;
+    public String name;
+    public Color color;
 
-    Item(String name) {
+    Item(String name, Color color) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
+        this.color = color;
     }
 }

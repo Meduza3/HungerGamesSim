@@ -31,6 +31,8 @@ public class Tribute extends Circle implements Runnable {
     private Pane pane;
     private TextArea console;
     private GridPane inventoryDisplay;
+    private Text nameText;
+    private Timeline timeline;
     ArrayList<Item> inventory = new ArrayList<>();
     Tribute(Pane pane, TextArea console, GridPane inventoryDisplay, double x, double y, String name) {
         this.setCenterX((x - 1) * GUI.cellWidth + GUI.cellWidth / 2);
@@ -42,6 +44,10 @@ public class Tribute extends Circle implements Runnable {
         this.pane = pane;
         this.console = console;
         this.inventoryDisplay = inventoryDisplay;
+        nameText = new Text(name);
+        nameText.setX(this.getCenterX()-15);
+        nameText.setY(this.getCenterY()+20);
+        pane.getChildren().add(nameText);
     }
 
     private void handleMouseClick(MouseEvent mouseEvent) {
@@ -49,10 +55,8 @@ public class Tribute extends Circle implements Runnable {
     }
 
     private void handleMouseHover(MouseEvent mouseEvent) {
-        System.out.println("Mouse hovered on " + name + "!");
         ArrayList<Node> paneChildren = new ArrayList<>(pane.getParent().getChildrenUnmodifiable());
         for(int i = 0; i < paneChildren.size(); i++){
-            System.out.println(paneChildren.get(i));
             Node node = paneChildren.get(i);
             if(node != null && node.getId() != null && node.getId().equals("info")){
                 if(node instanceof Pane){
@@ -91,10 +95,10 @@ public class Tribute extends Circle implements Runnable {
         }
 
         reactivity = 0.6 * health + 0.2 * hunger + 0.2 * thirst;
-        timeItTakesToMove = 2000 - 15 * reactivity;
+        timeItTakesToMove = 2000 - 10 * reactivity;
         while(isAlive){
             try {
-                Thread.sleep((long) (timeItTakesToMove));
+                Thread.sleep((long) (Math.random() * timeItTakesToMove + timeItTakesToMove / 2));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -110,6 +114,7 @@ public class Tribute extends Circle implements Runnable {
             hunger--;
             thirst--;
         }
+
         Platform.runLater(() -> pane.getChildren().remove(this));
     }
     private void useItem(){
@@ -123,26 +128,35 @@ public class Tribute extends Circle implements Runnable {
             for(Node tribute : pane.getChildren()){
                 if(tribute instanceof Tribute){
                     if(((Tribute) tribute).getCurrentCellId() == getCurrentCellId() && ((Tribute) tribute).name != name){
-                        System.out.println(name + " has fucking killed " + ((Tribute) tribute).name + "!");
-                        console.appendText(name + " has fucking killed " + ((Tribute) tribute).name + "!\n");
+                        System.out.println(name + " has killed " + ((Tribute) tribute).name + "!");
+                        console.appendText(name + " has killed " + ((Tribute) tribute).name + "!\n");
                         ((Tribute) tribute).isAlive = false;
                     }
                 }
             }
+        } if(inventory.contains(Item.MEDICINE) && health < 50){
+            inventory.remove(Item.MEDICINE);
+            health += 30;
+            System.out.println(name + " heals wounds.");
+            console.appendText(name + " heals wounds.\n");
         }
     }
 
     private void checkVitals(){
         if(hunger <= 0 || thirst <= 0){
-            health--;
-            hunger = health = 0;
+            health = health - 1;
+            hunger = thirst = 0;
         }
 
         if(health <= 0){
-            System.out.println(name + " has fucking died!");
-            console.appendText(name + " has fucking died!\n");
+            System.out.println(name + " has died!");
+            console.appendText(name + " has died!\n");
             isAlive = false;
-            Platform.runLater(() -> pane.getChildren().remove(this));
+            Platform.runLater(() -> {
+                timeline.stop();
+                pane.getChildren().remove(nameText);
+                pane.getChildren().remove(this);
+            });
         }
     }
 
@@ -150,14 +164,20 @@ public class Tribute extends Circle implements Runnable {
         ArrayList<Cell> options = examineSurroundings();
         Cell nextStop = chooseNextStop(options);
 
-        Timeline timeline = new Timeline(
+        timeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(this.centerXProperty(), this.getCenterX()),
-                        new KeyValue(this.centerYProperty(), this.getCenterY())),
+                        new KeyValue(this.centerYProperty(), this.getCenterY()),
+                        new KeyValue(nameText.xProperty(), nameText.getX()),
+                        new KeyValue(nameText.yProperty(), nameText.getY())),
                 new KeyFrame(Duration.millis(timeItTakesToMove/2),
                         new KeyValue(this.centerXProperty(), nextStop.centerX),
-                        new KeyValue(this.centerYProperty(), nextStop.centerY))
+                        new KeyValue(this.centerYProperty(), nextStop.centerY),
+                        new KeyValue(nameText.xProperty(), nextStop.centerX - 20),
+                        new KeyValue(nameText.yProperty(), nextStop.centerY + this.getRadius() + 15))
         );
+
+        timeline.play();
         timeline.play();
     }
 
@@ -225,10 +245,23 @@ public class Tribute extends Circle implements Runnable {
                 console.appendText(name + " fell down a tree!\n");
                 health = health - Math.floor(Math.random() * 30);
             }
-        }if(getCurrentCell().getType() == "Cornucopia" && !inventory.contains(Item.SWORD)){
+        }if(getCurrentCell().getType() == "Cornucopia" && !inventory.contains(Item.SWORD) && Math.random() < 0.8){
             System.out.println(name + " is collecting a weapon from the cornucopia!");
             console.appendText(name + " is collecting a weapon from the cornucopia!\n");
             inventory.add(Item.SWORD);
+        }if(getCurrentCell().getType() == "Cornucopia" && !inventory.contains(Item.MEDICINE) && Math.random() < 0.9){
+            System.out.println(name + " is collecting medicine from the cornucopia!");
+            console.appendText(name + " is collecting medicine from the cornucopia!\n");
+            inventory.add(Item.MEDICINE);
+        } for(Node tribute : pane.getChildren()){
+            if(tribute instanceof Tribute){
+                if(((Tribute) tribute).getCurrentCellId() == getCurrentCellId() && ((Tribute) tribute).name != name && !((Tribute) tribute).inventory.contains(Item.SWORD) && !this.inventory.contains(Item.SWORD) && Math.random() < 0.3){
+                    System.out.println(name + " and " + ((Tribute) tribute).name + " got into a fist fight!");
+                    console.appendText(name + " and " + ((Tribute) tribute).name + " got into a fist fight!\n");
+                    this.health = health - 15;
+                    ((Tribute) tribute).health = health - 15;
+                }
+            }
         }
     }
 }

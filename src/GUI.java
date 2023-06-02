@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -8,6 +9,8 @@ import javafx.scene.layout.Pane;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GUI implements Initializable {
 
@@ -69,15 +72,52 @@ public class GUI implements Initializable {
         pane.getChildren().addAll(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16);
 
 
-        startGame();
+        try {
+            startGame();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void startGame(){
+    private void startGame() throws InterruptedException {
         for(Node node : pane.getChildren()){
             if(node instanceof Tribute){
                 Thread thread = new Thread((Runnable) node);
                 thread.start();
             }
         }
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> shrinkGrid());
+            }
+        }, 20000);
+
     }
+
+    public void shrinkGrid() {
+        // Create a new list for cells to remove
+        ArrayList<Cell> toRemove = new ArrayList<>();
+
+        // Calculate the grid size from the number of cells
+        int gridSize = (int) Math.sqrt(cells.size());
+
+        // Iterate over all cells
+        for (Cell cell : cells) {
+            // Use the cell's gridX and gridY properties to get its coordinates
+            int cellX = cell.gridX;
+            int cellY = cell.gridY;
+
+            // If the cell is on the outer edge of the grid, add it to the toRemove list
+            if (cellX == 1 || cellY == 1 || cellX == gridSize || cellY == gridSize) {
+                toRemove.add(cell);
+                pane.getChildren().remove(cell); // remove cell from the pane
+            }
+        }
+
+        // Remove all cells in the toRemove list from the cells list
+        cells.removeAll(toRemove);
+    }
+
 }
