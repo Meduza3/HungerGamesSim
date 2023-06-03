@@ -84,7 +84,6 @@ public class Tribute extends Circle implements Runnable {
 
     @Override
     public void run() {
-        this.setStroke(Color.WHITE);
         this.setStrokeWidth(4);
         this.setStroke(Color.rgb((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random())));
 
@@ -94,18 +93,15 @@ public class Tribute extends Circle implements Runnable {
             throw new RuntimeException(e);
         }
 
-        reactivity = 0.6 * health + 0.2 * hunger + 0.2 * thirst;
-        timeItTakesToMove = 2000 - 10 * reactivity;
         while(isAlive){
+            reactivity = 0.6 * health + 0.2 * hunger + 0.2 * thirst;
+            timeItTakesToMove = 2000 - 10 * reactivity;
+
             try {
                 Thread.sleep((long) (Math.random() * timeItTakesToMove + timeItTakesToMove / 2));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Platform.runLater(() -> {
-                double normalizedHealth = Math.max(0, Math.min(health, 100)) / 100.0;
-                this.setFill(Color.rgb((int) (255 * (1 - normalizedHealth)), (int) (255 * normalizedHealth), 0));
-            });
 
             Platform.runLater(this::checkVitals);
             Platform.runLater(this::move);
@@ -143,6 +139,11 @@ public class Tribute extends Circle implements Runnable {
     }
 
     private void checkVitals(){
+        Platform.runLater(() -> {
+            double normalizedHealth = Math.max(0, Math.min(health, 100)) / 100.0;
+            this.setFill(Color.rgb((int) (255 * (1 - normalizedHealth)), (int) (255 * normalizedHealth), 0));
+        });
+
         if(hunger <= 0 || thirst <= 0){
             health = health - 1;
             hunger = thirst = 0;
@@ -153,8 +154,9 @@ public class Tribute extends Circle implements Runnable {
             console.appendText(name + " has died!\n");
             isAlive = false;
             Platform.runLater(() -> {
-                timeline.stop();
                 pane.getChildren().remove(nameText);
+                nameText.setVisible(false);
+                timeline.stop();
                 pane.getChildren().remove(this);
             });
         }

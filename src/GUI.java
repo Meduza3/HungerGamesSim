@@ -86,14 +86,6 @@ public class GUI implements Initializable {
                 thread.start();
             }
         }
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> shrinkGrid());
-            }
-        }, 20000);
-
     }
 
     public void shrinkGrid() {
