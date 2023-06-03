@@ -1,4 +1,3 @@
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -9,9 +8,6 @@ import javafx.scene.layout.Pane;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class GUI implements Initializable {
 
     //GUI Parameters

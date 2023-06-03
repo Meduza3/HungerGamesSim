@@ -8,8 +8,8 @@ public enum Item {
     ARMOR("Armor", Color.DARKGRAY),
     MEDICINE("Medicine", Color.PINK);
 
-    public String name;
-    public Color color;
+    public final String name;
+    public final Color color;
 
     Item(String name, Color color) {
         this.name = name;

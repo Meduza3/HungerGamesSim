@@ -2,21 +2,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class Tribute extends Circle implements Runnable {
@@ -26,12 +22,10 @@ public class Tribute extends Circle implements Runnable {
     double thirst = 100;
     double reactivity = 100;
     boolean isAlive = true;
-    int gridX, gridY;
     double timeItTakesToMove;
-    private Pane pane;
-    private TextArea console;
-    private GridPane inventoryDisplay;
-    private Text nameText;
+    private final Pane pane;
+    private final TextArea console;
+    private final Text nameText;
     private Timeline timeline;
     ArrayList<Item> inventory = new ArrayList<>();
     Tribute(Pane pane, TextArea console, GridPane inventoryDisplay, double x, double y, String name) {
@@ -43,7 +37,6 @@ public class Tribute extends Circle implements Runnable {
         this.name = name;
         this.pane = pane;
         this.console = console;
-        this.inventoryDisplay = inventoryDisplay;
         nameText = new Text(name);
         nameText.setX(this.getCenterX()-15);
         nameText.setY(this.getCenterY()+20);
@@ -56,18 +49,23 @@ public class Tribute extends Circle implements Runnable {
 
     private void handleMouseHover(MouseEvent mouseEvent) {
         ArrayList<Node> paneChildren = new ArrayList<>(pane.getParent().getChildrenUnmodifiable());
-        for(int i = 0; i < paneChildren.size(); i++){
-            Node node = paneChildren.get(i);
-            if(node != null && node.getId() != null && node.getId().equals("info")){
-                if(node instanceof Pane){
-                    for(Node child : ((Pane) node).getChildren()){
-                        if(child instanceof Text){
-                            if(child.getId().equals("infoName")){((Text) child).setText(name);}
-                            else if(child.getId().equals("infoHealth")){((Text) child).setText("Health: " + health);}
-                            else if(child.getId().equals("infoHunger")){((Text) child).setText("Hunger: " + hunger);}
-                            else if(child.getId().equals("infoThirst")){((Text) child).setText("Thirst: " + thirst);}
-                            else if(child.getId().equals("infoEq")){((Text) child).setText("Equipment: " + inventory.toString());}
-                        } else if(child instanceof Circle){
+        for (Node node : paneChildren) {
+            if (node != null && node.getId() != null && node.getId().equals("info")) {
+                if (node instanceof Pane) {
+                    for (Node child : ((Pane) node).getChildren()) {
+                        if (child instanceof Text) {
+                            if (child.getId().equals("infoName")) {
+                                ((Text) child).setText(name);
+                            } else if (child.getId().equals("infoHealth")) {
+                                ((Text) child).setText("Health: " + health);
+                            } else if (child.getId().equals("infoHunger")) {
+                                ((Text) child).setText("Hunger: " + hunger);
+                            } else if (child.getId().equals("infoThirst")) {
+                                ((Text) child).setText("Thirst: " + thirst);
+                            } else if (child.getId().equals("infoEq")) {
+                                ((Text) child).setText("Equipment: " + inventory.toString());
+                            }
+                        } else if (child instanceof Circle) {
                             ((Circle) child).setFill(this.getFill());
                             ((Circle) child).setStroke(this.getStroke());
                         }
@@ -123,7 +121,7 @@ public class Tribute extends Circle implements Runnable {
         } if(inventory.contains(Item.SWORD)){
             for(Node tribute : pane.getChildren()){
                 if(tribute instanceof Tribute){
-                    if(((Tribute) tribute).getCurrentCellId() == getCurrentCellId() && ((Tribute) tribute).name != name){
+                    if(Objects.equals(((Tribute) tribute).getCurrentCellId(), getCurrentCellId()) && !Objects.equals(((Tribute) tribute).name, name)){
                         System.out.println(name + " has killed " + ((Tribute) tribute).name + "!");
                         console.appendText(name + " has killed " + ((Tribute) tribute).name + "!\n");
                         ((Tribute) tribute).isAlive = false;
@@ -221,12 +219,11 @@ public class Tribute extends Circle implements Runnable {
 
     private Cell chooseNextStop(ArrayList<Cell> options){
         Random rand = new Random();
-        Cell randomElement = options.get(rand.nextInt(options.size()));
-        return randomElement;
+        return options.get(rand.nextInt(options.size()));
     }
 
     private void interact(){
-        if(getCurrentCell().getType() == "Water" && thirst < 80 && !inventory.contains(Item.WATER)){
+        if(Objects.equals(getCurrentCell().getType(), "Water") && thirst < 80 && !inventory.contains(Item.WATER)){
             if(Math.random() > 0.3){
                 System.out.println(name + " is collecting sweet lake water!");
                 //console.appendText(name + " is collecting sweet lake water!\n");
@@ -237,7 +234,7 @@ public class Tribute extends Circle implements Runnable {
                 health = health - Math.floor(Math.random() * 30);
             }
         }
-        if(getCurrentCell().getType() == "Forest" && hunger < 80 && !inventory.contains(Item.FRUIT)){
+        if(Objects.equals(getCurrentCell().getType(), "Forest") && hunger < 80 && !inventory.contains(Item.FRUIT)){
             if(Math.random() > 0.3) {
                 System.out.println(name + " is collecting food from the forest!");
                 //console.appendText(name + " is collecting food from the forest!\n");
@@ -247,17 +244,17 @@ public class Tribute extends Circle implements Runnable {
                 console.appendText(name + " fell down a tree!\n");
                 health = health - Math.floor(Math.random() * 30);
             }
-        }if(getCurrentCell().getType() == "Cornucopia" && !inventory.contains(Item.SWORD) && Math.random() < 0.8){
+        }if(Objects.equals(getCurrentCell().getType(), "Cornucopia") && !inventory.contains(Item.SWORD) && Math.random() < 0.8){
             System.out.println(name + " is collecting a weapon from the cornucopia!");
             console.appendText(name + " is collecting a weapon from the cornucopia!\n");
             inventory.add(Item.SWORD);
-        }if(getCurrentCell().getType() == "Cornucopia" && !inventory.contains(Item.MEDICINE) && Math.random() < 0.9){
+        }if(getCurrentCell().getType().equals("Cornucopia") && !inventory.contains(Item.MEDICINE) && Math.random() < 0.9){
             System.out.println(name + " is collecting medicine from the cornucopia!");
             console.appendText(name + " is collecting medicine from the cornucopia!\n");
             inventory.add(Item.MEDICINE);
         } for(Node tribute : pane.getChildren()){
             if(tribute instanceof Tribute){
-                if(((Tribute) tribute).getCurrentCellId() == getCurrentCellId() && ((Tribute) tribute).name != name && !((Tribute) tribute).inventory.contains(Item.SWORD) && !this.inventory.contains(Item.SWORD) && Math.random() < 0.3){
+                if(Objects.equals(((Tribute) tribute).getCurrentCellId(), getCurrentCellId()) && !Objects.equals(((Tribute) tribute).name, name) && !((Tribute) tribute).inventory.contains(Item.SWORD) && !this.inventory.contains(Item.SWORD) && Math.random() < 0.3){
                     System.out.println(name + " and " + ((Tribute) tribute).name + " got into a fist fight!");
                     console.appendText(name + " and " + ((Tribute) tribute).name + " got into a fist fight!\n");
                     this.health = health - 15;

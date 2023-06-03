@@ -2,7 +2,6 @@ import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.input.MouseEvent;
-import java.util.Objects;
 
 public class Cell extends Rectangle implements Runnable {
 
@@ -42,18 +41,25 @@ public class Cell extends Rectangle implements Runnable {
             type = "Plains";
         }
 
-        if(Objects.equals(type, "Cornucopia")){
-            this.setFill(Color.web("#5D3A0F"));
-        } else if(Objects.equals(type, "Forest")){
-            this.setFill(Color.web("#1a3910"));
-        } else if(Objects.equals(type, "Water")){
-            this.setFill(Color.web("#1B6481"));
-        } else if(Objects.equals(type, "Desert")){
-            this.setFill(Color.web("#BFAE1E"));
-        } else if(Objects.equals(type, "Mountains")){
-            this.setFill(Color.web("#6E6E6E"));
-        } else {
-            this.setFill(Color.web("#33721F"));
+        switch (type) {
+            case "Cornucopia":
+                this.setFill(Color.web("#5D3A0F"));
+                break;
+            case "Forest":
+                this.setFill(Color.web("#1a3910"));
+                break;
+            case "Water":
+                this.setFill(Color.web("#1B6481"));
+                break;
+            case "Desert":
+                this.setFill(Color.web("#BFAE1E"));
+                break;
+            case "Mountains":
+                this.setFill(Color.web("#6E6E6E"));
+                break;
+            default:
+                this.setFill(Color.web("#33721F"));
+                break;
         }
     }
 
