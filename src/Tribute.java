@@ -152,10 +152,9 @@ public class Tribute extends Circle implements Runnable {
             console.appendText(name + " has died!\n");
             isAlive = false;
             Platform.runLater(() -> {
-                pane.getChildren().remove(nameText);
-                nameText.setVisible(false);
-                timeline.stop();
                 pane.getChildren().remove(this);
+                pane.getChildren().remove(nameText);
+                timeline.stop();
             });
         }
     }
